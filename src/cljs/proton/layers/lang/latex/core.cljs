@@ -1,6 +1,8 @@
 (ns proton.layers.lang.latex.core
-  (:require [proton.lib.helpers :as helpers])
-  (:use [proton.layers.base :only [init-layer! get-initial-config get-keybindings get-packages get-keymaps describe-mode]]))
+  (:require [proton.lib.helpers :as helpers]
+            [proton.layers.core.actions :as actions :refer [state]]
+            [proton.lib.mode :as mode])
+  (:use [proton.layers.base :only [init-layer! get-initial-config get-keybindings get-packages get-keymaps describe-mode init-package]]))
 
 (def layer-state (atom {}))
 
@@ -10,7 +12,6 @@
 (defmethod init-layer! :lang/latex
   [_ {:keys [config layers]}]
   (helpers/console! "init" :lang/latex)
-
   (let [config-map (into (hash-map) config)]
     (swap! layer-state assoc :provider (config-map "proton.latex.latexmk-provider"))))
 
@@ -30,7 +31,7 @@
       :v {:action "latex:sync" :target actions/get-active-editor :title "View"}
       :! {:action "latex:clean" :target actions/get-active-editor :title "Clean"}}})
   (mode/link-modes :latex-major-mode (mode/package-mode-name :latex)))
-  
-(defmethod describe-mode :lang/latex [] 
+
+(defmethod describe-mode :lang/latex []
   {:mode-name :latex-major-mode
    :atom-scope ["text.tex.latex" "text.tex"]})
