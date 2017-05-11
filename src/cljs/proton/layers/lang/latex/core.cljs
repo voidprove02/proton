@@ -21,4 +21,16 @@
 
 (defmethod get-keybindings :lang/latex [] {})
 (defmethod get-keymaps :lang/latex [] [])
-(defmethod describe-mode :lang/latex [] {})
+
+(defmethod init-package [:lang/latex :latex] []
+  (helpers/console! "init package latex" :lang/latex)
+  (mode/define-package-mode :latex
+    {:mode-keybindings
+     {:b {:action "latex:build" :target actions/get-active-editor :title "Build"}
+      :v {:action "latex:sync" :target actions/get-active-editor :title "View"}
+      :! {:action "latex:clean" :target actions/get-active-editor :title "Clean"}}})
+  (mode/link-modes :latex-major-mode (mode/package-mode-name :latex)))
+  
+(defmethod describe-mode :lang/latex [] 
+  {:mode-name :latex-major-mode
+   :atom-scope ["text.tex.latex" "text.tex"]})
